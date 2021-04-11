@@ -1,6 +1,4 @@
 import React from "react";
-// import axios from "../axios";
-import { robots } from "../robots";
 
 const initialState = {
   id: "",
@@ -24,16 +22,23 @@ class AddName extends React.Component {
   };
 
   onSubmitAdd = () => {
-    // console.log(this.state);
-    // axios
-    //   .post("/users.json", this.state)
-    //   .then((response) => {
-    //     console.log(response);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-    robots.push(this.state);
+    if (!this.state.name || !this.state.email || !this.state.id) {
+      return;
+    }
+    fetch("https://robofriends-8d500-default-rtdb.firebaseio.com/users.json", {
+      method: "POST",
+      body: JSON.stringify(this.state),
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseData) => {
+        console.log("responseData", responseData);
+        this.setState({ id: responseData.name });
+        console.log("state", this.state);
+      });
+    // robots.push(this.state);
     this.props.onRouteChange("home");
     document.getElementById("username").value = "";
   };
@@ -77,7 +82,7 @@ class AddName extends React.Component {
                 </label>
                 <input
                   onChange={this.onEmailChange}
-                  className='b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100'
+                  className='pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100'
                   type='email'
                   name='email-address'
                   id='email-address'
